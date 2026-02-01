@@ -1,0 +1,21 @@
+name: graphviz-dive
+description: Create professional ByteByteGo-style system architecture diagrams using Graphviz DOT format with Excalidraw aesthetics
+version: 1.0.0
+author: ""
+keywords:
+  - graphviz
+  - dot
+  - architecture
+  - visualization
+  - diagrams
+  - system-design
+  - bytebytego
+  - excalidraw
+  - documentation
+license: MIT
+requirements:
+  - graphviz (for local rendering)
+files:
+  - SKILL.md
+  - README.md
+  - examples/

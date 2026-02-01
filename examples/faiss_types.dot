@@ -1,0 +1,100 @@
+digraph "faiss_types" {
+  // 1. Layout Engine
+  layout="dot";
+  rankdir="LR";
+  
+  // 2. Global Graph Attributes
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.0;
+    ranksep=1.5;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Faiss Index Type Hierarchy";
+    labelloc="t";
+  ];
+
+  // 3. Node Attributes
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  // 4. Edge Attributes
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  // Base Classes
+  subgraph cluster_base {
+    label="Base Classes";
+    style="dashed,rounded";
+    color="#888888";
+    bgcolor="#f8f9fa";
+    
+    Index [label="Index\n(float vectors)"];
+    IndexBinary [label="IndexBinary\n(binary vectors)"];
+  }
+
+  // Flat Indexes
+  subgraph cluster_flat {
+    label="Flat (Exhaustive)";
+    style="dashed,rounded";
+    color="#888888";
+    bgcolor="#e3f2fd";
+    
+    IndexFlat [label="IndexFlat"];
+    IndexFlatL2 [label="IndexFlatL2"];
+    IndexFlatIP [label="IndexFlatIP"];
+  }
+
+  // IVF Family
+  subgraph cluster_ivf {
+    label="IVF (Inverted File)";
+    style="dashed,rounded";
+    color="#888888";
+    bgcolor="#fff3e0";
+    
+    IndexIVF [label="IndexIVF"];
+    IndexIVFFlat [label="IndexIVFFlat"];
+    IndexIVFPQ [label="IndexIVFPQ"];
+  }
+
+  // HNSW Family
+  subgraph cluster_hnsw {
+    label="HNSW (Graph-based)";
+    style="dashed,rounded";
+    color="#888888";
+    bgcolor="#e8f5e9";
+    
+    IndexHNSW [label="IndexHNSW"];
+    IndexHNSWFlat [label="IndexHNSWFlat"];
+    IndexHNSWPQ [label="IndexHNSWPQ"];
+  }
+
+  // Relationships
+  Index -> IndexFlat [xlabel="inherits"];
+  IndexFlat -> IndexFlatL2 [xlabel="L2 metric"];
+  IndexFlat -> IndexFlatIP [xlabel="IP metric"];
+  
+  Index -> IndexIVF [xlabel="inherits"];
+  IndexIVF -> IndexIVFFlat [xlabel="flat storage"];
+  IndexIVF -> IndexIVFPQ [xlabel="PQ encoding"];
+  
+  Index -> IndexHNSW [xlabel="inherits"];
+  IndexHNSW -> IndexHNSWFlat [xlabel="storage"];
+  IndexHNSW -> IndexHNSWPQ [xlabel="PQ storage"];
+}
