@@ -5,7 +5,7 @@ A skill for creating professional "ByteByteGo-style" system architecture diagram
 ## Installation
 
 ```bash
-npx skills add <your-username>/graphviz-dive
+npx skills add CCALITA/graphviz-dive
 ```
 
 ## What This Skill Does
@@ -22,6 +22,7 @@ This skill provides a structured workflow for visualizing complex software syste
 ## Style Requirements
 
 All diagrams follow the "ByteByteGo" aesthetic:
+
 - **Orthogonal edges** (`splines="ortho"`) for right-angle connections
 - **Virgil font** for hand-drawn look
 - **Rounded rectangle nodes** with thick borders
@@ -32,6 +33,7 @@ All diagrams follow the "ByteByteGo" aesthetic:
 ## Usage
 
 When asked to visualize a codebase or system:
+
 1. The skill will explore the codebase structure
 2. Generate 3-4 separate DOT files for different aspects
 3. Use proper ByteByteGo styling
@@ -46,6 +48,7 @@ When asked to visualize a codebase or system:
 ## Rendering
 
 Paste DOT code into:
+
 - [Edotor.net](https://edotor.net)
 - [GraphvizOnline](https://dreampuf.github.io/GraphvizOnline)
 

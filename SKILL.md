@@ -1,9 +1,11 @@
 ---
 name: graphviz-dive
 description: Create professional ByteByteGo-style system architecture diagrams using Graphviz DOT format with Excalidraw aesthetics
+metadata:
+  tags: graphviz, dot, visualize, architecture, expore-code
 ---
 
-## Overview
+## When to use
 
 This skill defines the **mandatory** workflow for creating professional "ByteByteGo-style" system design diagrams.
 When asked to visualize a project, you must **decompose** the system into **3-4 distinct aspects** and generate separate Graphviz DOT files for each.
@@ -121,6 +123,7 @@ Always advise the user on how to render the output:
 2. "For the full Excalidraw experience, use a DOT-to-Excalidraw converter or drag the SVG into Excalidraw."
 
 ## Red Flags - STOP and Start Over
+
 * **Edge Labels**: You MUST use `xlabel` instead of `label` for edges. Standard `label` distorts the orthogonal layout.
 * **Single Monolithic Graph**: If you are trying to fit the class hierarchy AND the network topology in one graph, STOP. Split it.
 * **Curved Lines**: `splines="ortho"` is non-negotiable for this style.
