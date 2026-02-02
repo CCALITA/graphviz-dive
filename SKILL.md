@@ -1,6 +1,7 @@
-## Skill: graphviz-dive
-
-# Project Visualization
+---
+name: graphviz-dive
+description: Create professional ByteByteGo-style system architecture diagrams using Graphviz DOT format with Excalidraw aesthetics
+---
 
 ## Overview
 
