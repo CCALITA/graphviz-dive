@@ -1,0 +1,80 @@
+digraph "monolith_context" {
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.2;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Monolith - System Context";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  subgraph cluster_external {
+    label="External Actors";
+    style="dashed,rounded";
+    color="#dc3545";
+    bgcolor="#fff5f5";
+    
+    user [label="End User", shape="person", style="filled", fillcolor="#ffe6e6"];
+    admin [label="Administrator", shape="person", style="filled", fillcolor="#ffe6e6"];
+    api_consumer [label="API Consumer", shape="ellipse", style="dashed", fillcolor="#fff5f5"];
+  }
+
+  subgraph cluster_system {
+    label="Monolithic Application";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    web_ui [label="Web UI"];
+    mobile_app [label="Mobile App"];
+    rest_api [label="REST API"];
+  }
+
+  subgraph cluster_dependencies {
+    label="External Services";
+    style="dashed,rounded";
+    color="#6c757d";
+    bgcolor="#f8f9fa";
+    
+    payment_gateway [label="Payment Gateway", shape="ellipse", style="dashed"];
+    email_service [label="Email Service", shape="ellipse", style="dashed"];
+    cdn [label="CDN", shape="cylinder", style="dashed"];
+  }
+
+  user -> web_ui [xlabel="HTTPS"];
+  user -> mobile_app [xlabel="HTTPS"];
+  api_consumer -> rest_api [xlabel="REST/JSON"];
+  
+  web_ui -> rest_api [xlabel="AJAX"];
+  mobile_app -> rest_api [xlabel="HTTPS"];
+  
+  rest_api -> payment_gateway [xlabel="HTTP"];
+  rest_api -> email_service [xlabel="SMTP"];
+  web_ui -> cdn [xlabel="static assets"];
+}

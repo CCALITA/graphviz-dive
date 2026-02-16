@@ -1,0 +1,101 @@
+digraph "microservice_storage" {
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.2;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Microservices - Polyglot Storage";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  subgraph cluster_user_db {
+    label="User Service DB";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    user_pg [label="PostgreSQL", shape="cylinder"];
+    user_table [label="users", shape="tab"];
+  }
+
+  subgraph cluster_order_db {
+    label="Order Service DB";
+    style="rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    order_pg [label="PostgreSQL", shape="cylinder"];
+    order_table [label="orders", shape="tab"];
+    order_item_table [label="order_items", shape="tab"];
+  }
+
+  subgraph cluster_product_db {
+    label="Product Service DB";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    product_pg [label="PostgreSQL", shape="cylinder"];
+    product_table [label="products", shape="tab"];
+    inventory_table [label="inventory", shape="tab"];
+  }
+
+  subgraph cluster_payment_db {
+    label="Payment Service DB";
+    style="rounded";
+    color="#dc3545";
+    bgcolor="#fff5f5";
+    
+    payment_pg [label="PostgreSQL", shape="cylinder"];
+    payment_table [label="payments", shape="tab"];
+  }
+
+  subgraph cluster_cache {
+    label="Shared Cache";
+    style="rounded";
+    color="#6f42c1";
+    bgcolor="#f3e5f5";
+    
+    redis [label="Redis Cluster", shape="cylinder"];
+  }
+
+  user_pg -> user_table [xlabel="contains"];
+  order_pg -> order_table [xlabel="contains"];
+  order_pg -> order_item_table [xlabel="contains"];
+  product_pg -> product_table [xlabel="contains"];
+  product_pg -> inventory_table [xlabel="contains"];
+  payment_pg -> payment_table [xlabel="contains"];
+  
+  order_table -> user_table [xlabel="FK: user_id"];
+  order_item_table -> order_table [xlabel="FK: order_id"];
+  order_item_table -> product_table [xlabel="FK: product_id"];
+  
+  redis -> user_pg [xlabel="cache"];
+  redis -> product_pg [xlabel="cache"];
+}

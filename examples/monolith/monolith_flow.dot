@@ -1,0 +1,117 @@
+digraph "monolith_flow" {
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.2;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Monolith - Request Flow";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  subgraph cluster_entry {
+    label="Entry";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    http_request [label="HTTP Request"];
+  }
+
+  subgraph cluster_routing {
+    label="Routing";
+    style="rounded";
+    color="#6f42c1";
+    bgcolor="#f3e5f5";
+    
+    router [label="Router"];
+    middleware_stack [label="Middleware Stack"];
+  }
+
+  subgraph cluster_controller {
+    label="Controller";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    controller [label="Controller"];
+    action [label="Action Method"];
+  }
+
+  subgraph cluster_service {
+    label="Service";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    validator [label="Validate Input"];
+    business_logic [label="Business Logic"];
+    enrichment [label="Data Enrichment"];
+  }
+
+  subgraph cluster_data {
+    label="Data Access";
+    style="rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    repository [label="Repository"];
+    orm [label="ORM"];
+    db_connection [label="DB Connection Pool"];
+  }
+
+  subgraph cluster_exit {
+    label="Exit";
+    style="rounded";
+    color="#dc3545";
+    bgcolor="#fff5f5";
+    
+    response [label="HTTP Response"];
+    render_view [label="Render View"];
+  }
+
+  http_request -> router [xlabel="1"];
+  router -> middleware_stack [xlabel="2"];
+  middleware_stack -> controller [xlabel="3"];
+  controller -> action [xlabel="4"];
+  
+  action -> validator [xlabel="5"];
+  validator -> business_logic [xlabel="6"];
+  business_logic -> enrichment [xlabel="7"];
+  
+  enrichment -> repository [xlabel="8"];
+  repository -> orm [xlabel="9"];
+  orm -> db_connection [xlabel="10"];
+  
+  db_connection -> orm [xlabel="result"];
+  orm -> repository [xlabel="entities"];
+  repository -> enrichment [xlabel="data"];
+  
+  enrichment -> render_view [xlabel="11"];
+  render_view -> response [xlabel="12"];
+}

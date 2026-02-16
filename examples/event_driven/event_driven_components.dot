@@ -1,0 +1,88 @@
+digraph "event_driven_components" {
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.2;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Event-Driven - System Context";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  subgraph cluster_external {
+    label="External";
+    style="dashed,rounded";
+    color="#dc3545";
+    bgcolor="#fff5f5";
+    
+    user [label="User", shape="person"];
+    system [label="External System", shape="ellipse", style="dashed"];
+  }
+
+  subgraph cluster_entry {
+    label="Entry Point";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    api [label="Command API"];
+  }
+
+  subgraph cluster_event_bus {
+    label="Event Bus";
+    style="rounded";
+    color="#6f42c1";
+    bgcolor="#f3e5f5";
+    
+    event_bus [label="Event Broker"];
+    topic_orders [label="Topic: Orders"];
+    topic_notifications [label="Topic: Notifications"];
+  }
+
+  subgraph cluster_handlers {
+    label="Event Handlers";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    handler_order [label="Order Handler"];
+    handler_inventory [label="Inventory Handler"];
+    handler_notification [label="Notification Handler"];
+  }
+
+  user -> api [xlabel="command"];
+  system -> api [xlabel="event"];
+  
+  api -> event_bus [xlabel="publish"];
+  event_bus -> topic_orders [xlabel="route"];
+  event_bus -> topic_notifications [xlabel="route"];
+  
+  topic_orders -> handler_order [xlabel="consume"];
+  topic_orders -> handler_inventory [xlabel="consume"];
+  topic_notifications -> handler_notification [xlabel="consume"];
+}

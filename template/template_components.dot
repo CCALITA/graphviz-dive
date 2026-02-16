@@ -1,0 +1,121 @@
+digraph "components" {
+  // ============================================
+  // Components Diagram Template
+  // Focus: Modules, services, boundaries
+  // ============================================
+
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.2;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Component Architecture";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  // === PRESENTATION LAYER ===
+  subgraph cluster_presentation {
+    label="Presentation Layer";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    http_handler [label="HTTP Handler"];
+    ws_handler [label="WebSocket Handler"];
+    graphql_resolver [label="GraphQL Resolver"];
+  }
+
+  // === APPLICATION LAYER ===
+  subgraph cluster_application {
+    label="Application Layer";
+    style="rounded";
+    color="#6f42c1";
+    bgcolor="#f3e5f5";
+    
+    controller [label="Controller"];
+    service [label="Service"];
+    orchestrator [label="Orchestrator"];
+  }
+
+  // === DOMAIN LAYER ===
+  subgraph cluster_domain {
+    label="Domain Layer";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    entity [label="Entity"];
+    aggregate [label="Aggregate"];
+    value_object [label="Value Object"];
+    domain_event [label="Domain Event"];
+  }
+
+  // === INFRASTRUCTURE LAYER ===
+  subgraph cluster_infrastructure {
+    label="Infrastructure Layer";
+    style="rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    repository [label="Repository"];
+    client [label="External Client"];
+    adapter [label="Adapter"];
+  }
+
+  // === SHARED / CROSS-CUTTING ===
+  subgraph cluster_shared {
+    label="Shared / Kernel";
+    style="dashed,rounded";
+    color="#6c757d";
+    bgcolor="#f8f9fa";
+    
+    utils [label="Utilities"];
+    config [label="Config"];
+    constants [label="Constants"];
+  }
+
+  // === DEPENDENCIES ===
+  // Presentation -> Application
+  http_handler -> controller [xlabel="delegates"];
+  ws_handler -> controller [xlabel="delegates"];
+  graphql_resolver -> service [xlabel="invokes"];
+  
+  // Application -> Domain
+  controller -> entity [xlabel="uses"];
+  service -> aggregate [xlabel="manages"];
+  orchestrator -> domain_event [xlabel="emits"];
+  
+  // Application -> Infrastructure
+  service -> repository [xlabel="persists"];
+  client -> adapter [xlabel="implements"];
+  
+  // Domain -> Shared
+  entity -> value_object [xlabel="contains"];
+  aggregate -> utils [xlabel="uses"];
+}

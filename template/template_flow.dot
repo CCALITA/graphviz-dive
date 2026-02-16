@@ -1,0 +1,126 @@
+digraph "flow" {
+  // ============================================
+  // Flow Diagram Template
+  // Focus: Request pipeline, data journey
+  // ============================================
+
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.2;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Data Flow Pipeline";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  // === ENTRY POINTS ===
+  subgraph cluster_entry {
+    label="Entry Points";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    http_request [label="HTTP Request", shape="ellipse"];
+    cli_input [label="CLI Input", shape="ellipse"];
+    webhook [label="Webhook", shape="ellipse"];
+  }
+
+  // === GATEWAY / ROUTING ===
+  subgraph cluster_gateway {
+    label="Gateway / Router";
+    style="rounded";
+    color="#6f42c1";
+    bgcolor="#f3e5f5";
+    
+    router [label="Router"];
+    middleware [label="Middleware Chain"];
+    auth [label="Authentication"];
+  }
+
+  // === PROCESSING STAGES ===
+  subgraph cluster_processing {
+    label="Processing Stages";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    validator [label="Validator"];
+    transformer [label="Transformer"];
+    processor [label="Business Logic"];
+    enricher [label="Data Enricher"];
+  }
+
+  // === DECISION POINTS ===
+  subgraph cluster_decisions {
+    label="Decision Points";
+    style="rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    router_decision [label="Route\nDecision", shape="diamond"];
+    cache_check [label="Cache\nCheck", shape="diamond"];
+    validation_check [label="Valid?", shape="diamond"];
+  }
+
+  // === EXIT POINTS ===
+  subgraph cluster_exit {
+    label="Exit Points";
+    style="rounded";
+    color="#dc3545";
+    bgcolor="#fff5f5";
+    
+    http_response [label="HTTP Response"];
+    event_publish [label="Publish Event"];
+    persist [label="Persist Data"];
+  }
+
+  // === FLOWS ===
+  // Primary flow
+  http_request -> router [xlabel="1"];
+  router -> auth [xlabel="2"];
+  auth -> validator [xlabel="3"];
+  validator -> validation_check [xlabel="4"];
+  
+  // Decision branches
+  validation_check -> processor [xlabel="yes"];
+  validation_check -> http_response [xlabel="no", style="dashed", color="#dc3545"];
+  
+  // Processing pipeline
+  processor -> transformer [xlabel="5"];
+  transformer -> enricher [xlabel="6"];
+  enricher -> cache_check [xlabel="7"];
+  
+  // Cache decision
+  cache_check -> persist [xlabel="miss", style="dashed"];
+  cache_check -> http_response [xlabel="hit", style="dashed"];
+  
+  // Exit flows
+  persist -> event_publish [xlabel="8"];
+  event_publish -> http_response [xlabel="9"];
+}

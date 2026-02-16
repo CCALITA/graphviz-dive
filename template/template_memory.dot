@@ -1,0 +1,126 @@
+digraph "memory" {
+  // ============================================
+  // Memory Model Diagram Template
+  // Focus: Heap, stack, buffers, GC
+  // ============================================
+
+  layout="dot";
+  rankdir="TB";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.0;
+    ranksep=1.5;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Memory Model & Layout";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  // === PROCESS MEMORY ===
+  subgraph cluster_process {
+    label="Process Memory Space";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    // Stack
+    subgraph cluster_stack {
+      label="Stack";
+      style="dashed,rounded";
+      color="#198754";
+      bgcolor="#e8f5e9";
+      
+      stack_frame_1 [label="Frame: main()\n locals, params"];
+      stack_frame_2 [label="Frame: foo()\n locals, return addr"];
+      stack_frame_3 [label="Frame: bar()\n locals"];
+    }
+    
+    // Heap
+    subgraph cluster_heap {
+      label="Heap";
+      style="dashed,rounded";
+      color="#fd7e14";
+      bgcolor="#fff3e0";
+      
+      object_1 [label="Object A\n(new, allocated)"];
+      object_2 [label="Object B\n(referenced)"];
+      object_3 [label="Object C\n(garbage)"];
+      buffer [label="Buffer\n(8KB, aligned)"];
+    }
+    
+    // Static / Global
+    subgraph cluster_static {
+      label="Static / Global";
+      style="dashed,rounded";
+      color="#6f42c1";
+      bgcolor="#f3e5f5";
+      
+      global_var [label="global_var"];
+      const_pool [label="Const Pool"];
+      code_text [label="Code Text\n(.text)", style="dashed"];
+    }
+  }
+
+  // === GC REGIONS ===
+  subgraph cluster_gc {
+    label="GC Regions";
+    style="rounded";
+    color="#dc3545";
+    bgcolor="#fff5f5";
+    
+    young_gen [label="Young Gen\n(Eden, S0, S1)"];
+    old_gen [label="Old Gen\n(Tenured)"];
+    meta_space [label="Metaspace"];
+  }
+
+  // === POINTERS / REFERENCES ===
+  subgraph cluster_refs {
+    label="References / Pointers";
+    style="rounded";
+    color="#6c757d";
+    bgcolor="#f8f9fa";
+    
+    ptr_a [label="ptr_a -> Object A"];
+    ptr_b [label="ptr_b -> Object B"];
+    handle [label="Handle Table"];
+  }
+
+  // === RELATIONSHIPS ===
+  // Stack to Heap references
+  stack_frame_1 -> object_1 [xlabel="points_to", style="dashed"];
+  stack_frame_2 -> object_2 [xlabel="points_to", style="dashed"];
+  stack_frame_3 -> buffer [xlabel="points_to", style="dashed"];
+  
+  // GC relationships
+  young_gen -> object_1 [xlabel="allocates"];
+  young_gen -> old_gen [xlabel="promotes"];
+  old_gen -> meta_space [xlabel="metadata"];
+  
+  // Pointer relationships
+  ptr_a -> object_1 [xlabel="references"];
+  ptr_b -> object_2 [xlabel="references"];
+  handle -> object_1 [xlabel="indirect"];
+}

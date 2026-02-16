@@ -1,0 +1,95 @@
+digraph "monolith_concurrency" {
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.2;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Monolith - Concurrency Model";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  subgraph cluster_main {
+    label="Main Process";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    main_process [label="Main Process"];
+    server [label="Web Server\n(e.g., Gunicorn, Puma)"];
+  }
+
+  subgraph cluster_worker {
+    label="Worker Pool";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    worker_1 [label="Worker 1"];
+    worker_2 [label="Worker 2"];
+    worker_n [label="Worker N"];
+  }
+
+  subgraph cluster_request {
+    label="Per-Request Context";
+    style="rounded";
+    color="#6f42c1";
+    bgcolor="#f3e5f5";
+    
+    thread [label="Request Thread"];
+    connection [label="DB Connection"];
+    session [label="Session"];
+    local_storage [label="Thread Local"];
+  }
+
+  subgraph cluster_sync {
+    label="Synchronization";
+    style="rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    mutex [label="Global Lock", shape="diamond"];
+    db_pool [label="Connection Pool", shape="ellipse"];
+  }
+
+  main_process -> server [xlabel="starts"];
+  server -> worker_1 [xlabel="spawns"];
+  server -> worker_2 [xlabel="spawns"];
+  server -> worker_n [xlabel="spawns"];
+  
+  worker_1 -> thread [xlabel="handles"];
+  worker_2 -> thread [xlabel="handles"];
+  
+  thread -> connection [xlabel="acquires"];
+  thread -> session [xlabel="creates"];
+  thread -> local_storage [xlabel="uses"];
+  
+  connection -> db_pool [xlabel="from_pool"];
+  worker_1 -> mutex [xlabel="lock_global"];
+  worker_2 -> mutex [xlabel="lock_global"];
+}

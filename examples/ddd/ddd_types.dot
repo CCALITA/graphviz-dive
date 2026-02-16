@@ -1,0 +1,97 @@
+digraph "ddd_types" {
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.0;
+    ranksep=1.5;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="DDD - Domain Model";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  subgraph cluster_aggregates {
+    label="Aggregates";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    order_agg [label="Order\n(Aggregate Root)", style="bold"];
+    customer_agg [label="Customer\n(Aggregate Root)", style="bold"];
+  }
+
+  subgraph cluster_entities {
+    label="Entities";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    order_item [label="OrderItem"];
+    shipment [label="Shipment"];
+    payment [label="Payment"];
+  }
+
+  subgraph cluster_value_objects {
+    label="Value Objects";
+    style="dashed,rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    address [label="Address", style="italic"];
+    money [label="Money", style="italic"];
+    email [label="Email", style="italic"];
+    quantity [label="Quantity", style="italic"];
+  }
+
+  subgraph cluster_domain_events {
+    label="Domain Events";
+    style="rounded";
+    color="#6f42c1";
+    bgcolor="#f3e5f5";
+    
+    order_placed [label="OrderPlaced"];
+    payment_received [label="PaymentReceived"];
+    shipped [label="Shipped"];
+  }
+
+  order_agg -> order_item [xlabel="contains", dir="both", arrowhead="odiamond"];
+  order_agg -> address [xlabel="shipping_address"];
+  order_agg -> money [xlabel="total"];
+  order_agg -> order_placed [xlabel="emits"];
+  
+  customer_agg -> email [xlabel="email"];
+  customer_agg -> address [xlabel="billing_address"];
+  
+  order_item -> quantity [xlabel="quantity"];
+  order_item -> money [xlabel="price"];
+  
+  shipment -> order_placed [xlabel="triggers"];
+  shipment -> shipped [xlabel="emits"];
+  
+  payment -> money [xlabel="amount"];
+  payment -> payment_received [xlabel="emits"];
+}

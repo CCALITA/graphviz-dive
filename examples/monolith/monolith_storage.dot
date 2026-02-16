@@ -1,0 +1,94 @@
+digraph "monolith_storage" {
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.2;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Monolith - Storage Model";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  subgraph cluster_primary {
+    label="Primary Database";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    postgres [label="PostgreSQL", shape="cylinder"];
+  }
+
+  subgraph cluster_tables {
+    label="Tables";
+    style="dashed,rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    users [label="users", shape="tab", style="filled", fillcolor="#e8f5e9"];
+    orders [label="orders", shape="tab", style="filled", fillcolor="#e8f5e9"];
+    products [label="products", shape="tab", style="filled", fillcolor="#e8f5e9"];
+    order_items [label="order_items", shape="tab", style="filled", fillcolor="#e8f5e9"];
+    sessions [label="sessions", shape="tab", style="filled", fillcolor="#e8f5e9"];
+  }
+
+  subgraph cluster_cache {
+    label="Cache";
+    style="rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    redis [label="Redis", shape="cylinder"];
+    session_store [label="Session Store", shape="ellipse"];
+  }
+
+  subgraph cluster_file {
+    label="File Storage";
+    style="rounded";
+    color="#6c757d";
+    bgcolor="#f8f9fa";
+    
+    local_fs [label="Local Filesystem"];
+    uploads [label="Uploads Directory"];
+  }
+
+  postgres -> users [xlabel="contains"];
+  postgres -> orders [xlabel="contains"];
+  postgres -> products [xlabel="contains"];
+  postgres -> order_items [xlabel="contains"];
+  postgres -> sessions [xlabel="contains"];
+  
+  orders -> order_items [xlabel="1:n"];
+  users -> orders [xlabel="1:n"];
+  products -> order_items [xlabel="1:n"];
+  
+  redis -> postgres [xlabel="backs_up"];
+  redis -> session_store [xlabel="stores"];
+  
+  local_fs -> uploads [xlabel="holds"];
+  postgres -> local_fs [xlabel="references"];
+}

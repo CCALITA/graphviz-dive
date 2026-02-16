@@ -1,0 +1,93 @@
+digraph "ddd_concurrency" {
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.5;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="DDD - Bounded Contexts";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  subgraph cluster_customer {
+    label="Customer Context";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    customer_svc [label="Customer Service"];
+    customer_repo [label="Customer Repository"];
+  }
+
+  subgraph cluster_order {
+    label="Order Context";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    order_svc [label="Order Service"];
+    order_repo [label="Order Repository"];
+  }
+
+  subgraph cluster_inventory {
+    label="Inventory Context";
+    style="rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    inventory_svc [label="Inventory Service"];
+    inventory_repo [label="Inventory Repository"];
+  }
+
+  subgraph cluster_shipping {
+    label="Shipping Context";
+    style="rounded";
+    color="#6f42c1";
+    bgcolor="#f3e5f5";
+    
+    shipping_svc [label="Shipping Service"];
+    shipping_repo [label="Shipping Repository"];
+  }
+
+  subgraph cluster_integration {
+    label="Integration";
+    style="dashed";
+    color="#6c757d";
+    
+    event_bus [label="Event Bus"];
+  }
+
+  customer_svc -> customer_repo [xlabel="persist"];
+  order_svc -> order_repo [xlabel="persist"];
+  inventory_svc -> inventory_repo [xlabel="persist"];
+  shipping_svc -> shipping_repo [xlabel="persist"];
+  
+  order_svc -> event_bus [xlabel="publish"];
+  event_bus -> shipping_svc [xlabel="subscribe"];
+  event_bus -> inventory_svc [xlabel="subscribe"];
+}

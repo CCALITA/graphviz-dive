@@ -1,0 +1,95 @@
+digraph "microservice_context" {
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.2;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Microservices - System Context";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  subgraph cluster_external {
+    label="External";
+    style="dashed,rounded";
+    color="#dc3545";
+    bgcolor="#fff5f5";
+    
+    web_user [label="Web User", shape="person", style="filled", fillcolor="#ffe6e6"];
+    mobile_user [label="Mobile User", shape="person", style="filled", fillcolor="#ffe6e6"];
+    webhook [label="Webhook", shape="ellipse", style="dashed"];
+  }
+
+  subgraph cluster_gateway {
+    label="API Gateway";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    api_gateway [label="API Gateway"];
+    auth_service [label="Auth Service"];
+  }
+
+  subgraph cluster_services {
+    label="Microservices";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    user_service [label="User Service"];
+    order_service [label="Order Service"];
+    product_service [label="Product Service"];
+    payment_service [label="Payment Service"];
+    notification_service [label="Notification Service"];
+  }
+
+  subgraph cluster_infrastructure {
+    label="Infrastructure";
+    style="dashed,rounded";
+    color="#6c757d";
+    bgcolor="#f8f9fa";
+    
+    service_mesh [label="Service Mesh", shape="ellipse"];
+    message_queue [label="Message Queue", shape="cylinder"];
+  }
+
+  web_user -> api_gateway [xlabel="HTTPS"];
+  mobile_user -> api_gateway [xlabel="HTTPS"];
+  webhook -> api_gateway [xlabel="POST"];
+  
+  api_gateway -> auth_service [xlabel="validate"];
+  api_gateway -> service_mesh [xlabel="route"];
+  
+  service_mesh -> user_service [xlabel="HTTP/gRPC"];
+  service_mesh -> order_service [xlabel="HTTP/gRPC"];
+  service_mesh -> product_service [xlabel="HTTP/gRPC"];
+  
+  order_service -> payment_service [xlabel="gRPC"];
+  order_service -> message_queue [xlabel="publish"];
+  message_queue -> notification_service [xlabel="consume"];
+}
