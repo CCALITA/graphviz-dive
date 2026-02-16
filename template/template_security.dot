@@ -1,0 +1,120 @@
+digraph "security" {
+  // ============================================
+  // Security Diagram Template
+  // Focus: Auth, trust boundaries, permissions
+  // ============================================
+
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.2;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Security Model";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  // === UNTRUSTED ZONE ===
+  subgraph cluster_untrusted {
+    label="UNTRUSTED ZONE";
+    style="dashed";
+    color="#dc3545";
+    bgcolor="#fff5f5";
+    
+    internet [label="Internet", shape="ellipse"];
+    attacker [label="Attacker", shape="person", style="dashed"];
+  }
+
+  // === DMZ (Perimeter) ===
+  subgraph cluster_dmz {
+    label="DMZ (Perimeter)";
+    style="rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    firewall [label="Firewall", shape="diamond"];
+    waf [label="WAF", shape="diamond"];
+    load_balancer [label="Load Balancer", shape="ellipse"];
+  }
+
+  // === TRUST BOUNDARY ===
+  subgraph cluster_trusted {
+    label="TRUSTED ZONE";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    api_gateway [label="API Gateway"];
+    auth_service [label="Auth Service"];
+    session_mgr [label="Session Manager"];
+  }
+
+  // === APPLICATION ===
+  subgraph cluster_app {
+    label="Application";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    app_server [label="App Server"];
+    business_logic [label="Business Logic"];
+  }
+
+  // === DATA (Sensitive) ===
+  subgraph cluster_data {
+    label="SENSITIVE DATA";
+    style="rounded";
+    color="#dc3545";
+    bgcolor="#ffe6e6";
+    
+    user_db [label="User DB", shape="cylinder"];
+    secrets [label="Secrets", shape="cylinder", style="dashed"];
+    pii [label="PII Storage", shape="cylinder"];
+  }
+
+  // === RELATIONSHIPS ===
+  // Internet to DMZ
+  internet -> firewall [xlabel="HTTPS"];
+  attacker -> firewall [xlabel="attack", style="dashed", color="#dc3545"];
+  
+  // DMZ to Trusted
+  firewall -> waf [xlabel="inspect"];
+  waf -> load_balancer [xlabel="forward"];
+  load_balancer -> api_gateway [xlabel="route"];
+  
+  // Trusted to App
+  api_gateway -> auth_service [xlabel="validate"];
+  auth_service -> session_mgr [xlabel="creates"];
+  session_mgr -> app_server [xlabel="session"];
+  app_server -> business_logic [xlabel="delegates"];
+  
+  // App to Data
+  business_logic -> user_db [xlabel="CRUD", penwidth=2.0];
+  business_logic -> secrets [xlabel="read", style="dashed"];
+  business_logic -> pii [xlabel="access"];
+}

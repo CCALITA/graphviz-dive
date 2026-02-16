@@ -1,0 +1,98 @@
+digraph "microservice_components" {
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.0;
+    ranksep=1.5;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Microservices - Component Architecture";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  subgraph cluster_gateway {
+    label="API Gateway";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    gateway [label="Gateway"];
+    rate_limiter [label="Rate Limiter"];
+    router [label="Router"];
+  }
+
+  subgraph cluster_user_svc {
+    label="User Service";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    user_controller [label="Controller"];
+    user_service [label="Service"];
+    user_repo [label="Repository"];
+  }
+
+  subgraph cluster_order_svc {
+    label="Order Service";
+    style="rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    order_controller [label="Controller"];
+    order_service [label="Service"];
+    order_repo [label="Repository"];
+    saga_orchestrator [label="Saga Orchestrator"];
+  }
+
+  subgraph cluster_product_svc {
+    label="Product Service";
+    style="rounded";
+    color="#6f42c1";
+    bgcolor="#f3e5f5";
+    
+    product_controller [label="Controller"];
+    product_service [label="Service"];
+    product_repo [label="Repository"];
+  }
+
+  gateway -> rate_limiter [xlabel="check"];
+  rate_limiter -> router [xlabel="route"];
+  router -> user_controller [xlabel="HTTP"];
+  router -> order_controller [xlabel="HTTP"];
+  router -> product_controller [xlabel="HTTP"];
+  
+  user_controller -> user_service [xlabel="business"];
+  user_service -> user_repo [xlabel="persist"];
+  
+  order_controller -> order_service [xlabel="business"];
+  order_service -> order_repo [xlabel="persist"];
+  order_service -> saga_orchestrator [xlabel="coordinate"];
+  saga_orchestrator -> product_service [xlabel="check"];
+  
+  product_controller -> product_service [xlabel="business"];
+  product_service -> product_repo [xlabel="persist"];
+}

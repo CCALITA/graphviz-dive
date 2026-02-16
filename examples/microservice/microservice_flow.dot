@@ -1,0 +1,112 @@
+digraph "microservice_flow" {
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.2;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Microservices - Request Flow";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  subgraph cluster_client {
+    label="Client";
+    style="rounded";
+    color="#6c757d";
+    bgcolor="#f8f9fa";
+    
+    client [label="Client App"];
+  }
+
+  subgraph cluster_gateway {
+    label="Gateway";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    gateway [label="API Gateway"];
+    auth [label="Auth"];
+    rate_limit [label="Rate Limit"];
+  }
+
+  subgraph cluster_order {
+    label="Order Service";
+    style="rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    order_validate [label="Validate"];
+    order_logic [label="Business Logic"];
+    saga [label="Saga Orchestrator"];
+  }
+
+  subgraph cluster_product {
+    label="Product Service";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    product_check [label="Check Stock"];
+    product_reserve [label="Reserve"];
+  }
+
+  subgraph cluster_payment {
+    label="Payment Service";
+    style="rounded";
+    color="#dc3545";
+    bgcolor="#fff5f5";
+    
+    payment_process [label="Process Payment"];
+  }
+
+  subgraph cluster_async {
+    label="Async";
+    style="rounded";
+    color="#6f42c1";
+    bgcolor="#f3e5f5";
+    
+    queue [label="Message Queue"];
+    notification [label="Notification Service"];
+  }
+
+  client -> gateway [xlabel="1"];
+  gateway -> auth [xlabel="2"];
+  auth -> rate_limit [xlabel="3"];
+  rate_limit -> order_validate [xlabel="4"];
+  
+  order_validate -> order_logic [xlabel="5"];
+  order_logic -> product_check [xlabel="6"];
+  product_check -> product_reserve [xlabel="7"];
+  product_reserve -> order_logic [xlabel="8"];
+  
+  order_logic -> payment_process [xlabel="9"];
+  payment_process -> saga [xlabel="10"];
+  
+  saga -> queue [xlabel="11"];
+  queue -> notification [xlabel="12"];
+}

@@ -1,0 +1,108 @@
+digraph "types" {
+  // ============================================
+  // Types Diagram Template
+  // Focus: Classes, interfaces, inheritance
+  // ============================================
+
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.0;
+    ranksep=1.5;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Type System & Relationships";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  // === INTERFACES / ABSTRACT ===
+  subgraph cluster_abstract {
+    label="Interfaces / Abstract";
+    style="dashed,rounded";
+    color="#6f42c1";
+    bgcolor="#f3e5f5";
+    
+    // Use doublecircle or diamond for interfaces
+    interface_base [label="BaseInterface", style="dashed", shape="diamond", fillcolor="#f3e5f5"];
+    interface_service [label="IService", style="dashed", shape="diamond", fillcolor="#f3e5f5"];
+    interface_repository [label="IRepository", style="dashed", shape="diamond", fillcolor="#f3e5f5"];
+  }
+
+  // === BASE CLASSES ===
+  subgraph cluster_base {
+    label="Base Classes";
+    style="dashed,rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    base_entity [label="BaseEntity\n(id, created_at)"];
+    base_service [label="BaseService"];
+  }
+
+  // === CONCRETE CLASSES ===
+  subgraph cluster_concrete {
+    label="Concrete Classes";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    user [label="User\n(name, email)"];
+    order [label="Order\n(status, total)"];
+    service_impl [label="UserService"];
+    repo_impl [label="UserRepository"];
+  }
+
+  // === VALUE OBJECTS ===
+  subgraph cluster_value {
+    label="Value Objects";
+    style="dashed,rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    email [label="Email"];
+    money [label="Money"];
+    address [label="Address"];
+  }
+
+  // === RELATIONSHIPS ===
+  // Inheritance (solid arrow)
+  base_entity -> user [xlabel="extends", penwidth=2.0];
+  base_service -> service_impl [xlabel="extends"];
+  
+  // Implementation (dashed)
+  interface_service -> service_impl [xlabel="implements", style="dashed"];
+  interface_repository -> repo_impl [xlabel="implements", style="dashed"];
+  
+  // Composition (diamond)
+  order -> user [xlabel="belongs_to", dir="both", arrowhead="odiamond"];
+  service_impl -> repository [xlabel="has", dir="both", arrowhead="odiamond"];
+  
+  // Association (arrow)
+  user -> email [xlabel="has"];
+  order -> money [xlabel="has"];
+  user -> address [xlabel="lives_at"];
+}

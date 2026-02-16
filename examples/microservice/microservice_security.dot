@@ -1,0 +1,102 @@
+digraph "microservice_security" {
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.2;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Microservices - Security Model";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  subgraph cluster_untrusted {
+    label="UNTRUSTED";
+    style="dashed";
+    color="#dc3545";
+    bgcolor="#fff5f5";
+    
+    client [label="Client"];
+  }
+
+  subgraph cluster_perimeter {
+    label="Perimeter (mTLS)";
+    style="rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    gateway [label="API Gateway"];
+    idp [label="Identity Provider"];
+  }
+
+  subgraph cluster_mesh {
+    label="Service Mesh (mTLS)";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    sidecar_1 [label="Sidecar Proxy 1"];
+    sidecar_2 [label="Sidecar Proxy 2"];
+    sidecar_3 [label="Sidecar Proxy 3"];
+  }
+
+  subgraph cluster_services {
+    label="Services";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    svc_1 [label="Service A"];
+    svc_2 [label="Service B"];
+    svc_3 [label="Service C"];
+  }
+
+  subgraph cluster_secrets {
+    label="Secrets";
+    style="rounded";
+    color="#dc3545";
+    bgcolor="#ffe6e6";
+    
+    vault [label="Vault"];
+    certs [label="Certificates"];
+  }
+
+  client -> gateway [xlabel="TLS + JWT"];
+  gateway -> idp [xlabel="validate"];
+  
+  gateway -> sidecar_1 [xlabel="mTLS"];
+  sidecar_1 -> svc_1 [xlabel="localhost"];
+  
+  svc_1 -> sidecar_2 [xlabel="mTLS"];
+  sidecar_2 -> svc_2 [xlabel="localhost"];
+  
+  svc_2 -> sidecar_3 [xlabel="mTLS"];
+  sidecar_3 -> svc_3 [xlabel="localhost"];
+  
+  svc_1 -> vault [xlabel="fetch_secret"];
+  vault -> certs [xlabel="issues"];
+}

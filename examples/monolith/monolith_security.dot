@@ -1,0 +1,95 @@
+digraph "monolith_security" {
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.2;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Monolith - Security Model";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  subgraph cluster_untrusted {
+    label="UNTRUSTED";
+    style="dashed";
+    color="#dc3545";
+    bgcolor="#fff5f5";
+    
+    internet [label="Internet", shape="ellipse"];
+    attacker [label="Attacker", shape="person", style="dashed"];
+  }
+
+  subgraph cluster_perimeter {
+    label="Perimeter";
+    style="rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    firewall [label="Firewall", shape="diamond"];
+    lb [label="Load Balancer", shape="ellipse"];
+    ssl_terminator [label="SSL Termination", shape="diamond"];
+  }
+
+  subgraph cluster_trusted {
+    label="TRUSTED";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    web_server [label="Web Server"];
+    app_server [label="Application Server"];
+    auth_middleware [label="Auth Middleware"];
+    session_mgr [label="Session Manager"];
+  }
+
+  subgraph cluster_data {
+    label="SENSITIVE";
+    style="rounded";
+    color="#dc3545";
+    bgcolor="#ffe6e6";
+    
+    user_db [label="User Database", shape="cylinder"];
+    password_hash [label="Password Hashes", shape="ellipse"];
+    session_store [label="Session Store", shape="cylinder"];
+  }
+
+  internet -> firewall [xlabel="HTTPS"];
+  attacker -> firewall [xlabel="attack", style="dashed", color="#dc3545"];
+  
+  firewall -> lb [xlabel="forward"];
+  lb -> ssl_terminator [xlabel="decrypt"];
+  ssl_terminator -> web_server [xlabel="HTTP"];
+  
+  web_server -> app_server [xlabel="proxy"];
+  app_server -> auth_middleware [xlabel="middleware"];
+  auth_middleware -> session_mgr [xlabel="manage"];
+  
+  session_mgr -> user_db [xlabel="verify"];
+  user_db -> password_hash [xlabel="store"];
+  session_mgr -> session_store [xlabel="persist"];
+}

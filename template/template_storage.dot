@@ -1,0 +1,115 @@
+digraph "storage" {
+  // ============================================
+  // Storage Diagram Template
+  // Focus: Databases, caches, schemas
+  // ============================================
+
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.2;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Storage & Data Model";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  // === PRIMARY DATA STORE ===
+  subgraph cluster_primary {
+    label="Primary Database";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    postgres [label="PostgreSQL", shape="cylinder"];
+    mysql [label="MySQL", shape="cylinder"];
+  }
+
+  // === SCHEMAS / TABLES ===
+  subgraph cluster_schemas {
+    label="Schemas / Collections";
+    style="dashed,rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    users_table [label="users", shape="tab", style="filled", fillcolor="#e8f5e9"];
+    orders_table [label="orders", shape="tab", style="filled", fillcolor="#e8f5e9"];
+    items_table [label="items", shape="tab", style="filled", fillcolor="#e8f5e9"];
+  }
+
+  // === CACHE LAYER ===
+  subgraph cluster_cache {
+    label="Cache Layer";
+    style="rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    redis [label="Redis", shape="cylinder"];
+    memcached [label="Memcached", shape="cylinder"];
+  }
+
+  // === SEARCH / INDEX ===
+  subgraph cluster_search {
+    label="Search / Index";
+    style="rounded";
+    color="#6f42c1";
+    bgcolor="#f3e5f5";
+    
+    elasticsearch [label="Elasticsearch", shape="cylinder"];
+    algolia [label="Algolia", shape="cylinder"];
+  }
+
+  // === OBJECT STORAGE ===
+  subgraph cluster_objects {
+    label="Object Storage";
+    style="rounded";
+    color="#6c757d";
+    bgcolor="#f8f9fa";
+    
+    s3 [label="S3 / Blob", shape="cylinder"];
+    cdn [label="CDN", shape="ellipse"];
+  }
+
+  // === RELATIONSHIPS ===
+  // Primary DB
+  postgres -> users_table [xlabel="contains"];
+  postgres -> orders_table [xlabel="contains"];
+  orders_table -> items_table [xlabel="has_many"];
+  
+  // Cache
+  redis -> postgres [xlabel="backed_by"];
+  memcached -> redis [xlabel="warms"];
+  
+  // Search
+  elasticsearch -> postgres [xlabel="syncs_from"];
+  algolia -> elasticsearch [xlabel="indexes"];
+  
+  // Object storage
+  s3 -> cdn [xlabel="served_by"];
+  postgres -> s3 [xlabel="uploads_to"];
+}

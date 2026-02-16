@@ -1,0 +1,89 @@
+digraph "microservice_deployment" {
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.2;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Microservices - Kubernetes Deployment";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  subgraph cluster_ingress {
+    label="Ingress";
+    style="rounded";
+    color="#6c757d";
+    bgcolor="#f8f9fa";
+    
+    dns [label="DNS"];
+    ingress [label="Ingress Controller"];
+    lb [label="Cloud Load Balancer"];
+  }
+
+  subgraph cluster_k8s {
+    label="Kubernetes Cluster";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    gateway_pod [label="Gateway Pod\n(x3)"];
+    user_pod [label="User Pod\n(x2)"];
+    order_pod [label="Order Pod\n(x3)"];
+    product_pod [label="Product Pod\n(x2)"];
+    payment_pod [label="Payment Pod\n(x2)"];
+  }
+
+  subgraph cluster_data {
+    label="Data Services";
+    style="rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    user_db [label="Cloud SQL\n(User)"];
+    order_db [label="Cloud SQL\n(Order)"];
+    product_db [label="Cloud SQL\n(Product)"];
+    redis [label="Cloud Memorystore"];
+    mq [label="Cloud Pub/Sub"];
+  }
+
+  dns -> lb [xlabel="A record"];
+  lb -> ingress [xlabel="HTTP/HTTPS"];
+  ingress -> gateway_pod [xlabel="route"];
+  
+  gateway_pod -> user_pod [xlabel="HTTP"];
+  gateway_pod -> order_pod [xlabel="HTTP"];
+  order_pod -> product_pod [xlabel="HTTP"];
+  order_pod -> payment_pod [xlabel="gRPC"];
+  
+  user_pod -> user_db [xlabel="SQL"];
+  order_pod -> order_db [xlabel="SQL"];
+  product_pod -> product_db [xlabel="SQL"];
+  
+  user_pod -> redis [xlabel="cache"];
+  order_pod -> mq [xlabel="publish"];
+}

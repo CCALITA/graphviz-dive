@@ -1,0 +1,91 @@
+digraph "microservice_concurrency" {
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.2;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Microservices - Event Processing";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  subgraph cluster_producer {
+    label="Producer";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    producer [label="Producer Service"];
+  }
+
+  subgraph cluster_queue {
+    label="Message Queue";
+    style="rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    partition_1 [label="Partition 1"];
+    partition_2 [label="Partition 2"];
+    partition_3 [label="Partition 3"];
+  }
+
+  subgraph cluster_consumer {
+    label="Consumer Group";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    worker_1 [label="Worker 1"];
+    worker_2 [label="Worker 2"];
+    worker_3 [label="Worker 3"];
+  }
+
+  subgraph cluster_scale {
+    label="Scaling";
+    style="rounded";
+    color="#6f42c1";
+    bgcolor="#f3e5f5";
+    
+    lb [label="Consumer LB"];
+    circuit [label="Circuit Breaker", shape="diamond"];
+  }
+
+  producer -> partition_1 [xlabel="publish"];
+  producer -> partition_2 [xlabel="publish"];
+  producer -> partition_3 [xlabel="publish"];
+  
+  partition_1 -> worker_1 [xlabel="consume"];
+  partition_2 -> worker_2 [xlabel="consume"];
+  partition_3 -> worker_3 [xlabel="consume"];
+  
+  worker_1 -> lb [xlabel="register"];
+  worker_2 -> lb [xlabel="register"];
+  worker_3 -> lb [xlabel="register"];
+  
+  lb -> circuit [xlabel="delegate"];
+}

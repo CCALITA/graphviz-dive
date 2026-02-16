@@ -1,0 +1,133 @@
+digraph "deployment" {
+  // ============================================
+  // Deployment Diagram Template
+  // Focus: Infrastructure, containers, scaling
+  // ============================================
+
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.2;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Deployment Topology";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  // === CDN / EDGE ===
+  subgraph cluster_edge {
+    label="Edge / CDN";
+    style="rounded";
+    color="#6c757d";
+    bgcolor="#f8f9fa";
+    
+    cdn [label="CDN", shape="ellipse"];
+    dns [label="DNS", shape="ellipse"];
+    lb [label="Load Balancer", shape="ellipse"];
+  }
+
+  // === CONTAINER ORCHESTRATION ===
+  subgraph cluster_k8s {
+    label="Kubernetes Cluster";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    // Control plane
+    kube_control [label="Control Plane", shape="ellipse", style="dashed"];
+    
+    // Worker nodes
+    node_1 [label="Node 1", shape="ellipse"];
+    node_2 [label="Node 2", shape="ellipse"];
+    node_3 [label="Node 3", shape="ellipse"];
+  }
+
+  // === SERVICES ===
+  subgraph cluster_services {
+    label="Services (Pods)";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    // Replica sets
+    api_pod [label="API Pod\n(x3 replicas)", shape="box3d"];
+    worker_pod [label="Worker Pod\n(x2 replicas)", shape="box3d"];
+    scheduler_pod [label="Scheduler Pod\n(x1)", shape="box3d"];
+  }
+
+  // === DATA LAYER ===
+  subgraph cluster_data {
+    label="Data Layer (Managed)";
+    style="rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    rds [label="RDS / Managed DB", shape="cylinder"];
+    elasticache [label="ElastiCache", shape="cylinder"];
+    s3_bucket [label="S3 Bucket", shape="cylinder"];
+  }
+
+  // === EXTERNAL SERVICES ===
+  subgraph cluster_external {
+    label="External Services";
+    style="dashed,rounded";
+    color="#6c757d";
+    bgcolor="#f8f9fa";
+    
+    ext_pay [label="Payment API", shape="ellipse", style="dashed"];
+    ext_email [label="Email Service", shape="ellipse", style="dashed"];
+  }
+
+  // === RELATIONSHIPS ===
+  // Edge to K8s
+  dns -> cdn [xlabel="resolves"];
+  cdn -> lb [xlabel="routes"];
+  lb -> api_pod [xlabel="round-robin"];
+  
+  // K8s internals
+  kube_control -> node_1 [xlabel="schedules"];
+  kube_control -> node_2 [xlabel="schedules"];
+  kube_control -> node_3 [xlabel="schedules"];
+  
+  node_1 -> api_pod [xlabel="runs"];
+  node_2 -> worker_pod [xlabel="runs"];
+  node_3 -> scheduler_pod [xlabel="runs"];
+  
+  // Service communication
+  api_pod -> worker_pod [xlabel="async queue"];
+  worker_pod -> scheduler_pod [xlabel="gRPC"];
+  
+  // Data layer
+  api_pod -> rds [xlabel="SQL"];
+  worker_pod -> elasticache [xlabel="Redis"];
+  api_pod -> s3_bucket [xlabel="upload"];
+  
+  // External
+  api_pod -> ext_pay [xlabel="REST"];
+  worker_pod -> ext_email [xlabel="SMTP"];
+}

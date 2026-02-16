@@ -1,0 +1,92 @@
+digraph "event_driven_flow" {
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.2;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Event-Driven - Event Flow";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  subgraph cluster_command {
+    label="Command Side (Write)";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    http [label="HTTP Request"];
+    validate [label="Validate"];
+    persist [label="Persist Event Log"];
+    emit [label="Emit Event"];
+  }
+
+  subgraph cluster_broker {
+    label="Event Broker";
+    style="rounded";
+    color="#6f42c1";
+    bgcolor="#f3e5f5";
+    
+    broker [label="Event Broker"];
+    partition [label="Partition/Topic"];
+  }
+
+  subgraph cluster_query {
+    label="Query Side (Read)";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    read_model [label="Read Model"];
+    projection [label="Projector"];
+    query [label="Query Handler"];
+  }
+
+  subgraph cluster_handlers {
+    label="Handlers";
+    style="rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    handler_1 [label="Handler A"];
+    handler_2 [label="Handler B"];
+  }
+
+  http -> validate [xlabel="1"];
+  validate -> persist [xlabel="2"];
+  persist -> emit [xlabel="3"];
+  emit -> broker [xlabel="4"];
+  
+  broker -> partition [xlabel="5"];
+  partition -> read_model [xlabel="6"];
+  partition -> handler_1 [xlabel="7"];
+  partition -> handler_2 [xlabel="8"];
+  
+  read_model -> projection [xlabel="update"];
+  query -> projection [xlabel="read"];
+}

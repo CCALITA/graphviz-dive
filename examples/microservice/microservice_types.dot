@@ -1,0 +1,66 @@
+digraph "microservice_types" {
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.0;
+    ranksep=1.5;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Microservices - Service Contracts";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  subgraph cluster_dtos {
+    label="DTOs / Contracts";
+    style="dashed,rounded";
+    color="#6f42c1";
+    bgcolor="#f3e5f5";
+    
+    user_dto [label="UserDTO", shape="record"];
+    order_dto [label="OrderDTO", shape="record"];
+    product_dto [label="ProductDTO", shape="record"];
+    payment_dto [label="PaymentDTO", shape="record"];
+  }
+
+  subgraph cluster_events {
+    label="Events";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    user_created [label="UserCreatedEvent"];
+    order_created [label="OrderCreatedEvent"];
+    payment_success [label="PaymentSuccessEvent"];
+    payment_failed [label="PaymentFailedEvent"];
+  }
+
+  user_dto -> user_created [xlabel="produces"];
+  order_dto -> order_created [xlabel="produces"];
+  order_created -> payment_dto [xlabel="triggers"];
+  payment_dto -> payment_success [xlabel="produces"];
+  payment_success -> order_created [xlabel="updates"];
+}

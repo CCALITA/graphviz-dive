@@ -1,0 +1,98 @@
+digraph "monolith_deployment" {
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.2;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Monolith - Deployment Topology";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  subgraph cluster_edge {
+    label="Edge";
+    style="rounded";
+    color="#6c757d";
+    bgcolor="#f8f9fa";
+    
+    dns [label="DNS", shape="ellipse"];
+    cdn [label="CDN", shape="ellipse"];
+    lb [label="Load Balancer", shape="ellipse"];
+  }
+
+  subgraph cluster_app_server {
+    label="Application Server";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    server_1 [label="Server 1", shape="ellipse"];
+    server_2 [label="Server 2", shape="ellipse"];
+  }
+
+  subgraph cluster_app_process {
+    label="Application Process";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    app_1 [label="App Instance 1"];
+    app_2 [label="App Instance 2"];
+    app_3 [label="App Instance 3"];
+  }
+
+  subgraph cluster_data {
+    label="Data Layer";
+    style="rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    db_primary [label="Primary DB", shape="cylinder"];
+    db_replica [label="Read Replica", shape="cylinder"];
+    redis [label="Redis", shape="cylinder"];
+  }
+
+  dns -> cdn [xlabel="A record"];
+  cdn -> lb [xlabel="routes"];
+  lb -> server_1 [xlabel="balances"];
+  lb -> server_2 [xlabel="balances"];
+  
+  server_1 -> app_1 [xlabel="runs"];
+  server_1 -> app_2 [xlabel="runs"];
+  server_2 -> app_3 [xlabel="runs"];
+  
+  app_1 -> db_primary [xlabel="write"];
+  app_2 -> db_primary [xlabel="write"];
+  app_1 -> db_replica [xlabel="read"];
+  app_2 -> db_replica [xlabel="read"];
+  app_3 -> db_replica [xlabel="read"];
+  
+  app_1 -> redis [xlabel="cache"];
+  app_2 -> redis [xlabel="cache"];
+  app_3 -> redis [xlabel="cache"];
+}

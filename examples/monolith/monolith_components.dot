@@ -1,0 +1,107 @@
+digraph "monolith_components" {
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.0;
+    ranksep=1.5;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Monolith - Component Architecture";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  subgraph cluster_presentation {
+    label="Presentation Layer";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    route_handler [label="Route Handler"];
+    controller [label="Controller"];
+    view_renderer [label="View Renderer"];
+  }
+
+  subgraph cluster_application {
+    label="Application Layer";
+    style="rounded";
+    color="#6f42c1";
+    bgcolor="#f3e5f5";
+    
+    middleware [label="Middleware"];
+    validator [label="Validator"];
+    service_layer [label="Service Layer"];
+  }
+
+  subgraph cluster_domain {
+    label="Domain Layer";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    entity [label="Entity"];
+    value_object [label="Value Object"];
+    domain_service [label="Domain Service"];
+  }
+
+  subgraph cluster_infrastructure {
+    label="Infrastructure Layer";
+    style="rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    repository [label="Repository"];
+    orm [label="ORM"];
+    external_client [label="External Client"];
+  }
+
+  subgraph cluster_shared {
+    label="Shared";
+    style="dashed,rounded";
+    color="#6c757d";
+    bgcolor="#f8f9fa";
+    
+    config [label="Config"];
+    logger [label="Logger"];
+    utils [label="Utilities"];
+  }
+
+  route_handler -> controller [xlabel="dispatch"];
+  controller -> middleware [xlabel="passes"];
+  middleware -> validator [xlabel="validates"];
+  validator -> service_layer [xlabel="business_logic"];
+  
+  service_layer -> entity [xlabel="operates"];
+  service_layer -> value_object [xlabel="uses"];
+  service_layer -> domain_service [xlabel="delegates"];
+  
+  service_layer -> repository [xlabel="persist"];
+  repository -> orm [xlabel="abstracts"];
+  orm -> external_client [xlabel="queries"];
+  
+  entity -> utils [xlabel="utilizes"];
+  service_layer -> config [xlabel="reads"];
+}

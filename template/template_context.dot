@@ -1,0 +1,96 @@
+digraph "context" {
+  // ============================================
+  // Context Diagram Template
+  // Focus: External users, systems, boundaries
+  // ============================================
+
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.2;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="System Context";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  // === EXTERNAL ACTORS (Users, Systems) ===
+  subgraph cluster_external {
+    label="External Actors";
+    style="dashed,rounded";
+    color="#dc3545";
+    bgcolor="#fff5f5";
+    
+    // Users
+    user [label="End User", shape="person", style="filled", fillcolor="#ffe6e6"];
+    admin [label="Admin", shape="person", style="filled", fillcolor="#ffe6e6"];
+    
+    // External Systems
+    ext_api [label="Third-Party API", shape="ellipse", style="dashed", fillcolor="#fff5f5"];
+    ext_db [label="External Database", shape="cylinder", style="dashed", fillcolor="#fff5f5"];
+  }
+
+  // === SYSTEM UNDER ANALYSIS ===
+  subgraph cluster_system {
+    label="System Under Analysis";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    // Entry Points
+    api_gateway [label="API Gateway", style="filled", fillcolor="#e7f1ff"];
+    web_ui [label="Web UI", style="filled", fillcolor="#e7f1ff"];
+    
+    // Core System
+    main_service [label="Main Service", style="filled", fillcolor="#e7f1ff"];
+  }
+
+  // === EXTERNAL DEPENDENCIES ===
+  subgraph cluster_dependencies {
+    label="External Dependencies";
+    style="dashed,rounded";
+    color="#6c757d";
+    bgcolor="#f8f9fa";
+    
+    ext_cache [label="Cache Service", shape="cylinder", style="dashed"];
+    ext_queue [label="Message Queue", shape="ellipse", style="dashed"];
+  }
+
+  // === RELATIONSHIPS ===
+  // User interactions
+  user -> api_gateway [xlabel="HTTPS/REST", penwidth=2.0];
+  admin -> web_ui [xlabel="HTTPS", penwidth=2.0];
+  
+  // External API calls
+  api_gateway -> main_service [xlabel="internal", penwidth=1.5];
+  main_service -> ext_api [xlabel="HTTP", penwidth=1.5];
+  
+  // External dependencies
+  main_service -> ext_cache [xlabel="read/write"];
+  main_service -> ext_queue [xlabel="publish/subscribe"];
+}

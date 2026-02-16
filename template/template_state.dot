@@ -1,0 +1,134 @@
+digraph "state" {
+  // ============================================
+  // State Machine Diagram Template
+  // Focus: Lifecycle, transitions, states
+  // ============================================
+
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.5;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="State Machine & Lifecycle";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  // === INITIAL STATES ===
+  subgraph cluster_initial {
+    label="Initial";
+    style="rounded";
+    color="#6c757d";
+    bgcolor="#f8f9fa";
+    
+    none [label="None / Null", shape="ellipse"];
+    allocated [label="Allocated", style="filled", fillcolor="#e7f1ff"];
+  }
+
+  // === CONSTRUCTION ===
+  subgraph cluster_construct {
+    label="Construction";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    created [label="Created", style="filled", fillcolor="#e7f1ff"];
+    initialized [label="Initialized", style="filled", fillcolor="#e7f1ff"];
+    ready [label="Ready", style="filled", fillcolor="#198754", color="#198754"];
+  }
+
+  // === ACTIVE STATES ===
+  subgraph cluster_active {
+    label="Active";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    running [label="Running", style="filled", fillcolor="#198754"];
+    processing [label="Processing", style="filled", fillcolor="#198754"];
+    waiting [label="Waiting", style="filled", fillcolor="#fff3e0"];
+  }
+
+  // === TERMINAL STATES ===
+  subgraph cluster_terminal {
+    label="Terminal";
+    style="rounded";
+    color="#dc3545";
+    bgcolor="#fff5f5";
+    
+    stopped [label="Stopped", style="filled", fillcolor="#fff5f5"];
+    completed [label="Completed", style="filled", fillcolor="#fff5f5"];
+    failed [label="Failed", style="filled", fillcolor="#ffe6e6"];
+    destroyed [label="Destroyed", shape="ellipse", style="dashed"];
+  }
+
+  // === ERROR STATES ===
+  subgraph cluster_error {
+    label="Error";
+    style="rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    error [label="Error State"];
+    retry [label="Retrying"];
+    rolled_back [label="Rolled Back"];
+  }
+
+  // === TRANSITIONS ===
+  // Creation
+  none -> allocated [xlabel="allocate"];
+  allocated -> created [xlabel="constructor"];
+  created -> initialized [xlabel="init"];
+  initialized -> ready [xlabel="start"];
+  
+  // Lifecycle
+  ready -> running [xlabel="run"];
+  running -> processing [xlabel="process"];
+  processing -> waiting [xlabel="await"];
+  waiting -> running [xlabel="signal"];
+  
+  // Completion paths
+  running -> completed [xlabel="success"];
+  processing -> stopped [xlabel="stop"];
+  
+  // Error paths
+  processing -> error [xlabel="exception"];
+  error -> retry [xlabel="retry"];
+  retry -> running [xlabel="succeed"];
+  retry -> failed [xlabel="exhausted"];
+  error -> rolled_back [xlabel="rollback"];
+  
+  // Cleanup
+  completed -> destroyed [xlabel=""];
+  failed ->destructor destroyed [xlabel="cleanup"];
+  stopped -> destroyed [xlabel="free"];
+  
+  // Restart
+  stopped -> ready [xlabel="restart"];
+  failed -> ready [xlabel="reset"];
+}

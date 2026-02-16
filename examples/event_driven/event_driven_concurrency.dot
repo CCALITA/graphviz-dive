@@ -1,0 +1,98 @@
+digraph "event_driven_concurrency" {
+  layout="dot";
+  rankdir="LR";
+  
+  graph [
+    fontname="Virgil";
+    fontsize=20;
+    splines="ortho";
+    nodesep=1.2;
+    ranksep=1.8;
+    pad=0.5;
+    style="filled";
+    color="white";
+    label="Event-Driven - Concurrency Model";
+    labelloc="t";
+  ];
+
+  node [
+    shape="box";
+    style="rounded,filled";
+    fillcolor="#ffffff";
+    fontname="Virgil";
+    fontsize=16;
+    penwidth=2.0;
+    color="#000000";
+    margin=0.2;
+  ];
+
+  edge [
+    fontname="Virgil";
+    fontsize=12;
+    penwidth=1.5;
+    color="#000000";
+    arrowhead="vee";
+  ];
+
+  subgraph cluster_producer {
+    label="Producers";
+    style="rounded";
+    color="#0d6efd";
+    bgcolor="#e7f1ff";
+    
+    producer [label="Producer"];
+  }
+
+  subgraph cluster_stream {
+    label="Event Stream";
+    style="rounded";
+    color="#6f42c1";
+    bgcolor="#f3e5f5";
+    
+    stream [label="Event Stream"];
+    partition_1 [label="Partition 0"];
+    partition_2 [label="Partition 1"];
+  }
+
+  subgraph cluster_consumer_group {
+    label="Consumer Group A";
+    style="rounded";
+    color="#198754";
+    bgcolor="#e8f5e9";
+    
+    cg1_w1 [label="Consumer 1"];
+    cg1_w2 [label="Consumer 2"];
+  }
+
+  subgraph cluster_consumer_group_b {
+    label="Consumer Group B";
+    style="rounded";
+    color="#fd7e14";
+    bgcolor="#fff3e0";
+    
+    cg2_w1 [label="Consumer 1"];
+  }
+
+  subgraph cluster_state {
+    label="State Management";
+    style="rounded";
+    color="#dc3545";
+    bgcolor="#fff5f5";
+    
+    offset [label="Offset Tracker"];
+    checkpoint [label="Checkpoint"];
+  }
+
+  producer -> stream [xlabel="produce"];
+  
+  stream -> partition_1 [xlabel="assign"];
+  stream -> partition_2 [xlabel="assign"];
+  
+  partition_1 -> cg1_w1 [xlabel="consume"];
+  partition_2 -> cg1_w2 [xlabel="consume"];
+  
+  partition_1 -> cg2_w1 [xlabel="consume"];
+  
+  cg1_w1 -> offset [xlabel="commit"];
+  cg1_w2 -> checkpoint [xlabel="save"];
+}
